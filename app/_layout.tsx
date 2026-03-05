@@ -2,7 +2,6 @@ import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 
 export default function RootLayout() {
-
   const [loaded] = useFonts({
     Outfit: require("../assets/font/Outfit-Regular.ttf"),
     OutfitMedium: require("../assets/font/Outfit-Medium.ttf"),
@@ -14,10 +13,10 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{
-        headerShown:false
-      }} />
+    <Stack screenOptions={{
+      headerShown:false
+    }}>
+      <Stack.Screen name="(tabs)" />
     </Stack>
   );
 }

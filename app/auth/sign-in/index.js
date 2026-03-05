@@ -29,6 +29,7 @@ export default function SignIn() {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
+                router.replace('/mytrip')
                 console.log(user);
 
             })
