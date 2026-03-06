@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Colors } from "./../../constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import StartNewTripCard from "../../MyTrips/StartNewTripCard";
+import StartNewTripCard from "../../components/MyTrips/StartNewTripCard";
 import { useState } from "react";
 
 export default function mytrip() {
