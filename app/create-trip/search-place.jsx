@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -14,7 +14,7 @@ export default function SearchPlace() {
   const navigation = useNavigation();
 
   const { tripData, setTripData } = useContext(CreateTripContext);
-
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [places, setPlaces] = useState([]);
 
@@ -114,7 +114,7 @@ export default function SearchPlace() {
       };
 
       console.log("Selected Location Details:", details);
-
+      router.push("/create-trip/select-Traveler");
       const image = `https://source.unsplash.com/600x400/?${details.city}`;
 
       setTripData({
@@ -153,12 +153,11 @@ export default function SearchPlace() {
       <View
         style={{
           borderWidth: 1.5,
-          borderColor:Colors.GRAY,
+          borderColor: Colors.GRAY,
           borderRadius: 5,
           paddingHorizontal: 10,
           paddingVertical: 2,
-          marginTop:35,
-        
+          marginTop: 35,
         }}
       >
         <TextInput
