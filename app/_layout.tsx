@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function RootLayout() {
 
-  const [tripData, settripData] = useState([]);
+  const [tripData, setTripData] = useState([]);
 
   const [loaded] = useFonts({
     Outfit: require("../assets/font/Outfit-Regular.ttf"),
@@ -18,7 +18,7 @@ export default function RootLayout() {
   }
 
   return (
-    <CreateTripContext.Provider value={{ tripData, settripData }}>
+    <CreateTripContext.Provider value={{ tripData, setTripData }}>
       <Stack
         screenOptions={{
           headerShown: false,

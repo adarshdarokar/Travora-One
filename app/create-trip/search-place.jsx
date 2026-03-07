@@ -52,6 +52,7 @@ export default function SearchPlace() {
           label: fullAddress,
           lat: item.geometry.coordinates[1],
           lng: item.geometry.coordinates[0],
+          city: p.city || p.name,
         };
       });
 
@@ -90,20 +91,32 @@ export default function SearchPlace() {
 
       const data = await res.json();
 
+      const address = data.address || {};
+
       const details = {
-        name: data.name,
+        name: data.name || address.road || address.neighbourhood,
         display_name: data.display_name,
-        city: data.address.city || data.address.town || data.address.village,
-        state: data.address.state,
-        country: data.address.country,
-        postcode: data.address.postcode,
+
+        city:
+          address.city ||
+          address.town ||
+          address.village ||
+          address.county ||
+          address.state_district,
+
+        state: address.state || address.region || address.state_district,
+
+        country: address.country,
+        postcode: address.postcode,
+
         lat: data.lat,
         lon: data.lon,
       };
 
       console.log("Selected Location Details:", details);
 
-      // ⭐ context update (आपके screenshot वाला part)
+      const image = `https://source.unsplash.com/600x400/?${details.city}`;
+
       setTripData({
         locationInfo: {
           name: details.display_name,
@@ -111,11 +124,10 @@ export default function SearchPlace() {
             lat: details.lat,
             lng: details.lon,
           },
-          url: `https://www.openstreetmap.org/?mlat=${details.lat}&mlon=${details.lon}`,
+          photoRef: image,
+          url: `https://maps.google.com/?q=${details.lat},${details.lon}`,
         },
       });
-
-      navigation.goBack();
     } catch (err) {
       console.log("Details API error:", err);
     }
@@ -137,17 +149,29 @@ export default function SearchPlace() {
         height: "100%",
       }}
     >
-      <TextInput
-        placeholder="Search location"
-        value={query}
-        onChangeText={searchPlace}
+      {/* SEARCH BOX */}
+      <View
         style={{
-          borderWidth: 1,
-          padding: 12,
-          borderRadius: 10,
+          borderWidth: 1.5,
+          borderColor:Colors.GRAY,
+          borderRadius: 5,
+          paddingHorizontal: 10,
+          paddingVertical: 2,
+          marginTop:35,
+        
         }}
-      />
+      >
+        <TextInput
+          placeholder="Search Place"
+          value={query}
+          onChangeText={searchPlace}
+          style={{
+            fontSize: 16,
+          }}
+        />
+      </View>
 
+      {/* SEARCH RESULTS */}
       <FlatList
         data={places}
         keyExtractor={(item) => item.id}
@@ -157,6 +181,7 @@ export default function SearchPlace() {
               style={{
                 padding: 12,
                 borderBottomWidth: 0.5,
+                borderColor: "#ddd",
               }}
             >
               {item.label}
