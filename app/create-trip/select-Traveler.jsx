@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { useNavigation, Link } from "expo-router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { Colors } from "../../constants/theme";
@@ -7,12 +7,22 @@ import OptionCard from "../../components/CreateTrip/OptionCard";
 import { CreateTripContext } from "../../context/CreateTripContext";
 
 export default function SelectTraveler() {
+
+  // Navigation hook to configure header options
   const navigation = useNavigation();
-  const [selectedTraveler, setselectedTraveler] = useState();
+
+  // State to store currently selected traveler option
+  const [selectedTraveler, setSelectedTraveler] = useState();
+
+  // Global trip data context (shared across create trip screens)
   const { tripData, setTripData } = useContext(CreateTripContext);
 
+  // Ref to track previous tripData for logging changes
   const prevData = useRef(null);
 
+  /**
+   * Configure navigation header when screen loads
+   */
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -21,6 +31,9 @@ export default function SelectTraveler() {
     });
   }, []);
 
+  /**
+   * Update global tripData when traveler selection changes
+   */
   useEffect(() => {
     if (selectedTraveler) {
       setTripData({
@@ -30,6 +43,11 @@ export default function SelectTraveler() {
     }
   }, [selectedTraveler]);
 
+  /**
+   * Debug logger:
+   * Logs tripData only when it actually changes
+   * Prevents unnecessary console logs
+   */
   useEffect(() => {
     const current = JSON.stringify(tripData);
 
@@ -48,6 +66,8 @@ export default function SelectTraveler() {
         height: "100%",
       }}
     >
+
+      {/* Screen Title */}
       <Text
         style={{
           fontSize: 30,
@@ -58,6 +78,7 @@ export default function SelectTraveler() {
         Who's Traveling
       </Text>
 
+      {/* Traveler Selection Section */}
       <View
         style={{
           marginTop: 19,
@@ -72,41 +93,51 @@ export default function SelectTraveler() {
           Choose your travelers
         </Text>
 
+        {/* Traveler Options List */}
         <FlatList
           data={SelecTravelerList}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => setselectedTraveler(item)}
+              onPress={() => setSelectedTraveler(item)}
               style={{
                 marginVertical: 10,
               }}
             >
-              <OptionCard option={item} selectedTraveler={selectedTraveler} />
+              {/* OptionCard component displays traveler UI */}
+              <OptionCard
+                option={item}
+                selectedTraveler={selectedTraveler}
+              />
             </TouchableOpacity>
           )}
         />
       </View>
 
-      <TouchableOpacity
-        style={{
-          padding: 13,
-          backgroundColor: Colors.PRIMARY,
-          borderRadius: 13,
-          marginTop: 23,
-        }}
-      >
-        <Text
+      {/* Continue Button → Navigate to date selection screen */}
+      <Link href={"/create-trip/search-dates"} asChild>
+        <TouchableOpacity
           style={{
-            textAlign: "center",
-            color: Colors.WHITE,
-            fontFamily: "OutfitMedium",
-            fontSize: 18,
+            padding: 13,
+            backgroundColor: Colors.PRIMARY,
+            borderRadius: 13,
+            marginTop: 23,
+            width: "100%",
           }}
         >
-          Continue
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={{
+              textAlign: "center",
+              color: Colors.WHITE,
+              fontFamily: "OutfitMedium",
+              fontSize: 18,
+            }}
+          >
+            Continue
+          </Text>
+        </TouchableOpacity>
+      </Link>
+
     </View>
   );
 }
