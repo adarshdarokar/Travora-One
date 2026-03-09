@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Colors } from "../../constants/theme";
 
-export default function OptionCard({ option, selectedTraveler }) {
+export default function OptionCard({ option, selectedOption }) {
   return (
     <View
       style={[
@@ -16,7 +16,7 @@ export default function OptionCard({ option, selectedTraveler }) {
           borderRadius: 15,
           marginTop: 10,
         },
-        selectedTraveler?.id == option?.id && { borderWidth: 1 },
+        selectedOption?.id == option?.id && { borderWidth: 1 },
       ]}
     >
       <View>

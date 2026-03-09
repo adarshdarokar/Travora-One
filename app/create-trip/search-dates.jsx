@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { router, useNavigation, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import CalendarPicker from "react-native-calendar-picker";
@@ -7,16 +7,14 @@ import moment from "moment/moment";
 import { CreateTripContext } from "../../context/CreateTripContext";
 
 export default function SearchDates() {
-
   // State to store selected start and end dates
   const [StartDate, setStartDate] = useState(null);
   const [EndDate, setEndDate] = useState(null);
 
   // Global trip data context (shared across create-trip flow)
   const { tripData, setTripData } = useContext(CreateTripContext);
-
   const navigation = useNavigation();
-
+  const router = useRouter();
   // Configure navigation header when screen loads
   useEffect(() => {
     navigation.setOptions({
@@ -49,13 +47,9 @@ export default function SearchDates() {
    * Validates date selection and calculates trip duration
    */
   const OnDateSelectionContinue = () => {
-
     // Prevent continue if dates are not selected
     if (!StartDate || !EndDate) {
-      ToastAndroid.show(
-        "Please select Start and End Date",
-        ToastAndroid.LONG
-      );
+      ToastAndroid.show("Please select Start and End Date", ToastAndroid.LONG);
       return;
     }
 
@@ -75,6 +69,7 @@ export default function SearchDates() {
       EndDate: EndDate,
       totalNoOfDates: totalNoOfDates + 1,
     });
+    router.push("/create-trip/Select-budget");
   };
 
   return (

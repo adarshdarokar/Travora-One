@@ -107,7 +107,7 @@ export default function SelectTraveler() {
               {/* OptionCard component displays traveler UI */}
               <OptionCard
                 option={item}
-                selectedTraveler={selectedTraveler}
+                selectedOption={selectedTraveler}
               />
             </TouchableOpacity>
           )}
