@@ -1,11 +1,59 @@
+import { GoogleGenAI } from "@google/genai";
+import { useRouter } from "expo-router";
+import { useContext, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
+import { AI_PROMPT } from "../../constants/Options";
 import { Colors } from "../../constants/theme";
-// import { useContext } from "react";
-// import { CreateTripContext } from "../../context/CreateTripContext";
+import { CreateTripContext } from "../../context/CreateTripContext";
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY,
+});
 
 export default function GenerateTrip() {
-    // const { tripData, setTripData } = useContext(CreateTripContext);
-  
+  const { tripData } = useContext(CreateTripContext);
+
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const GenerativeAiTrip = async () => {
+    setLoading(true);
+
+    const FINAL_PROMPT = AI_PROMPT.replace(
+      "{location}",
+      tripData?.locationInfo?.name,
+    )
+      .replace("{totalDays}", tripData?.totalNoOfDates)
+      .replace("{totalNight}", tripData?.totalNoOfDates - 1)
+      .replace("{traveler}", tripData?.traveler?.title)
+      .replace("{budget}", tripData?.budget);
+
+    console.log("FINAL PROMPT:", FINAL_PROMPT);
+
+    try {
+      const result = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: FINAL_PROMPT,
+      });
+
+      console.log("AI RESPONSE:", result.text);
+
+      setLoading(false);
+
+      router.push("/(tabs)/mytrip");
+    } catch (error) {
+      console.log("AI ERROR:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tripData) {
+      GenerativeAiTrip();
+    }
+  }, [tripData]);
+
   return (
     <View
       style={{
@@ -45,15 +93,17 @@ export default function GenerateTrip() {
           marginTop: 40,
         }}
       />
-      <Text style={{
-        fontFamily:'OutfitBold',
-        color:Colors.GRAY,
-        fontSize:20,
-        textAlign:'center',
-        marginTop:40
-      }}
+
+      <Text
+        style={{
+          fontFamily: "OutfitBold",
+          color: Colors.GRAY,
+          fontSize: 20,
+          textAlign: "center",
+          marginTop: 40,
+        }}
       >
-  [ Do not Go back ]
+        [ Do not Go back ]
       </Text>
     </View>
   );
