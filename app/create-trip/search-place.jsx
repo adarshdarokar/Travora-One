@@ -12,9 +12,10 @@ import { CreateTripContext } from "../../context/CreateTripContext";
 
 export default function SearchPlace() {
   const navigation = useNavigation();
+  const router = useRouter();
 
   const { tripData, setTripData } = useContext(CreateTripContext);
-  const router = useRouter();
+
   const [query, setQuery] = useState("");
   const [places, setPlaces] = useState([]);
 
@@ -27,10 +28,6 @@ export default function SearchPlace() {
       headerTitle: "Search",
     });
   }, []);
-
-  useEffect(() => {
-    console.log(tripData);
-  }, [tripData]);
 
   const fetchPlaces = async (text) => {
     try {
@@ -94,9 +91,6 @@ export default function SearchPlace() {
       const address = data.address || {};
 
       const details = {
-        name: data.name || address.road || address.neighbourhood,
-        display_name: data.display_name,
-
         city:
           address.city ||
           address.town ||
@@ -107,19 +101,22 @@ export default function SearchPlace() {
         state: address.state || address.region || address.state_district,
 
         country: address.country,
-        postcode: address.postcode,
 
         lat: data.lat,
         lon: data.lon,
       };
 
       console.log("Selected Location Details:", details);
-      router.push("/create-trip/select-Traveler");
+
+      const shortAddress = [details.city, details.state, details.country]
+        .filter(Boolean)
+        .join(", ");
+
       const image = `https://source.unsplash.com/600x400/?${details.city}`;
 
       setTripData({
         locationInfo: {
-          name: details.display_name,
+          name: shortAddress,
           coordinates: {
             lat: details.lat,
             lng: details.lon,
@@ -128,6 +125,8 @@ export default function SearchPlace() {
           url: `https://maps.google.com/?q=${details.lat},${details.lon}`,
         },
       });
+
+      router.push("/create-trip/select-Traveler");
     } catch (err) {
       console.log("Details API error:", err);
     }

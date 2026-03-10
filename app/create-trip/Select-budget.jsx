@@ -30,7 +30,7 @@ export default function Selectbudget() {
       return;
 
     }
-    router.push('')
+    router.push('/create-trip/review-trip')
   }
   return (
     <View

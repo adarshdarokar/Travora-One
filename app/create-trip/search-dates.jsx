@@ -1,21 +1,21 @@
-import { router, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
+import moment from "moment";
 import { useContext, useEffect, useState } from "react";
 import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import CalendarPicker from "react-native-calendar-picker";
 import { Colors } from "../../constants/theme";
-import moment from "moment/moment";
 import { CreateTripContext } from "../../context/CreateTripContext";
 
 export default function SearchDates() {
-  // State to store selected start and end dates
+
   const [StartDate, setStartDate] = useState(null);
   const [EndDate, setEndDate] = useState(null);
 
-  // Global trip data context (shared across create-trip flow)
   const { tripData, setTripData } = useContext(CreateTripContext);
+
   const navigation = useNavigation();
   const router = useRouter();
-  // Configure navigation header when screen loads
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -24,55 +24,44 @@ export default function SearchDates() {
     });
   }, []);
 
-  /**
-   * Handles date selection from CalendarPicker
-   * CalendarPicker sends:
-   * - START_DATE when first date is selected
-   * - END_DATE when second date is selected
-   */
   const onDateChange = (date, type) => {
-    console.log(date, type);
 
-    if (type == "START_DATE") {
-      // Store selected start date using moment
+    if (type === "START_DATE") {
       setStartDate(moment(date));
-    } else {
-      // Store selected end date using moment
+      setEndDate(null);
+    }
+
+    if (type === "END_DATE") {
       setEndDate(moment(date));
     }
+
   };
 
-  /**
-   * Triggered when user presses Continue button
-   * Validates date selection and calculates trip duration
-   */
   const OnDateSelectionContinue = () => {
-    // Prevent continue if dates are not selected
+
     if (!StartDate || !EndDate) {
-      ToastAndroid.show("Please select Start and End Date", ToastAndroid.LONG);
+      ToastAndroid.show(
+        "Please select Start and End Date",
+        ToastAndroid.LONG
+      );
       return;
     }
 
-    // Calculate number of days between start and end date
     const totalNoOfDates = EndDate.diff(StartDate, "days");
 
-    // +1 because travel days include both start and end date
-    console.log(totalNoOfDates + 1);
-
-    /**
-     * Save selected dates and trip duration
-     * into global tripData context
-     */
     setTripData({
       ...tripData,
-      StartDate: StartDate,
-      EndDate: EndDate,
+      StartDate,
+      EndDate,
       totalNoOfDates: totalNoOfDates + 1,
     });
+
     router.push("/create-trip/Select-budget");
+
   };
 
   return (
+
     <View
       style={{
         padding: 25,
@@ -81,7 +70,7 @@ export default function SearchDates() {
         height: "100%",
       }}
     >
-      {/* Screen Title */}
+
       <Text
         style={{
           fontFamily: "OutfitBold",
@@ -92,27 +81,30 @@ export default function SearchDates() {
         Travel Dates
       </Text>
 
-      {/* Calendar Section */}
-      <View
-        style={{
-          marginTop: 40,
-        }}
-      >
-        <CalendarPicker
-          onDateChange={onDateChange} // date selection handler
-          allowRangeSelection={true} // enable start + end date selection
-          minDate={new Date()} // prevent selecting past dates
-          maxRangeDuration={5} // maximum trip duration = 5 days
-          selectedRangeStyle={{
-            backgroundColor: Colors.PRIMARY,
-          }}
-          selectedDayTextStyle={{
-            color: Colors.WHITE,
-          }}
-        />
+      <View style={{ marginTop: 40 }}>
+
+      <CalendarPicker
+  onDateChange={onDateChange}
+  allowRangeSelection={true}
+  allowBackwardRangeSelect={true}
+
+  minDate={moment().add(1, "days").toDate()}
+
+  maxRangeDuration={5}
+
+  todayBackgroundColor="transparent"
+
+  selectedRangeStyle={{
+    backgroundColor: Colors.PRIMARY,
+  }}
+
+  selectedDayTextStyle={{
+    color: Colors.WHITE,
+  }}
+/>
+
       </View>
 
-      {/* Continue Button */}
       <TouchableOpacity
         onPress={OnDateSelectionContinue}
         style={{
@@ -122,6 +114,7 @@ export default function SearchDates() {
           marginTop: 29,
         }}
       >
+
         <Text
           style={{
             textAlign: "center",
@@ -132,7 +125,10 @@ export default function SearchDates() {
         >
           Continue
         </Text>
+
       </TouchableOpacity>
+
     </View>
+
   );
 }
