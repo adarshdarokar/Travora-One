@@ -1,10 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 import { useRouter } from "expo-router";
+import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 import { AI_PROMPT } from "../../constants/Options";
 import { Colors } from "../../constants/theme";
 import { CreateTripContext } from "../../context/CreateTripContext";
+import { auth, db } from "./../../configs/Firebase";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY,
@@ -12,32 +14,44 @@ const ai = new GoogleGenAI({
 
 export default function GenerateTrip() {
   const { tripData } = useContext(CreateTripContext);
-
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
+  const user = auth.currentUser;
 
   const GenerativeAiTrip = async () => {
-    setLoading(true);
-
-    const FINAL_PROMPT = AI_PROMPT.replace(
-      "{location}",
-      tripData?.locationInfo?.name,
-    )
-      .replace("{totalDays}", tripData?.totalNoOfDates)
-      .replace("{totalNight}", tripData?.totalNoOfDates - 1)
-      .replace("{traveler}", tripData?.traveler?.title)
-      .replace("{budget}", tripData?.budget);
-
-    console.log("FINAL PROMPT:", FINAL_PROMPT);
-
     try {
+      setLoading(true);
+
+      const FINAL_PROMPT = AI_PROMPT.replace(
+        "{location}",
+        tripData?.locationInfo?.name,
+      )
+        .replace("{totalDays}", tripData?.totalNoOfDates)
+        .replace("{totalNight}", tripData?.totalNoOfDates - 1)
+        .replace("{traveler}", tripData?.traveler?.title)
+        .replace("{budget}", tripData?.budget);
+
+      console.log("FINAL PROMPT:", FINAL_PROMPT);
+
       const result = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: FINAL_PROMPT,
       });
 
-      console.log("AI RESPONSE:", result.text);
+      const aiText = result.text;
+
+      console.log("AI RESPONSE:", aiText);
+
+      const tripResp = JSON.parse(aiText);
+
+      const docId = Date.now().toString();
+
+      await setDoc(doc(db, "UserTrips", docId), {
+        userEmail: user?.email,
+        tripPlan: tripResp,
+        tripData: tripData,
+        id: docId,
+      });
 
       setLoading(false);
 
