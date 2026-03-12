@@ -1,16 +1,11 @@
-import { GoogleGenAI } from "@google/genai";
 import { useRouter } from "expo-router";
 import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
-import { AI_PROMPT } from "../../constants/Options";
+import { generateTripPlan } from "../../configs/AiModel";
 import { Colors } from "../../constants/theme";
 import { CreateTripContext } from "../../context/CreateTripContext";
 import { auth, db } from "./../../configs/Firebase";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY,
-});
 
 export default function GenerateTrip() {
   const { tripData } = useContext(CreateTripContext);
@@ -19,54 +14,52 @@ export default function GenerateTrip() {
   const user = auth.currentUser;
 
   const GenerativeAiTrip = async () => {
+    if (!tripData) return;
+
+    setLoading(true);
+
     try {
-      setLoading(true);
+      console.log("TRIP DATA:", tripData);
 
-      const FINAL_PROMPT = AI_PROMPT.replace(
-        "{location}",
-        tripData?.locationInfo?.name,
-      )
-        .replace("{totalDays}", tripData?.totalNoOfDates)
-        .replace("{totalNight}", tripData?.totalNoOfDates - 1)
-        .replace("{traveler}", tripData?.traveler?.title)
-        .replace("{budget}", tripData?.budget);
+      const tripResp = await generateTripPlan(tripData);
 
-      console.log("FINAL PROMPT:", FINAL_PROMPT);
+      console.log("AI TRIP RESPONSE:", tripResp);
 
-      const result = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: FINAL_PROMPT,
-      });
-
-      const aiText = result.text;
-
-      console.log("AI RESPONSE:", aiText);
-
-      const tripResp = JSON.parse(aiText);
+      if (!tripResp) {
+        throw new Error("Trip generation failed");
+      }
 
       const docId = Date.now().toString();
 
+      const safeTripData = {
+        ...tripData,
+        StartDate: tripData?.StartDate
+          ? new Date(tripData.StartDate).toISOString()
+          : null,
+        EndDate: tripData?.EndDate
+          ? new Date(tripData.EndDate).toISOString()
+          : null,
+      };
+
       await setDoc(doc(db, "UserTrips", docId), {
-        userEmail: user?.email,
+        userEmail: user?.email || "unknown",
+        tripData: safeTripData,
         tripPlan: tripResp,
-        tripData: tripData,
-        id: docId,
       });
 
-      setLoading(false);
+      console.log("TRIP SAVED");
 
       router.push("/(tabs)/mytrip");
     } catch (error) {
       console.log("AI ERROR:", error);
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (tripData) {
-      GenerativeAiTrip();
-    }
-  }, [tripData]);
+    GenerativeAiTrip();
+  }, []);
 
   return (
     <View
