@@ -1,27 +1,78 @@
-import { View, Text } from "react-native";
-import React from "react";
-import { Colors } from "./../../constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import StartNewTripCard from "../../components/MyTrips/StartNewTripCard";
-import { useState } from "react";
+import UserTripList from "../../components/MyTrips/UserTripList";
+import { auth, db } from "./../../configs/Firebase";
+import { Colors } from "./../../constants/theme";
 
-export default function mytrip() {
-  const [userTrips, setuserTrips] = useState([]);
+export default function MyTrip() {
+  const [userTrips, setUserTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
+  // Detect logged-in user
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        GetMyTrips(currentUser);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+ const GetMyTrips = async (currentUser) => {
+  try {
+    setLoading(true);
+
+    console.log("USER EMAIL:", currentUser.email);
+
+    const q = query(
+      collection(db, "UserTrips"),
+      where("userEmail", "==", currentUser.email)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    console.log("DOC SIZE:", querySnapshot.size);
+
+    let trips = [];
+
+    querySnapshot.forEach((doc) => {
+      console.log("DOC DATA:", doc.data());
+
+      trips.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    console.log("FINAL TRIPS:", trips);
+
+    setUserTrips(trips);
+  } catch (error) {
+    console.log("ERROR fetching trips:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <View
       style={{
         padding: 25,
         paddingTop: 55,
         backgroundColor: Colors.WHITE,
-        height: "100%",
+        flex: 1,
       }}
     >
       <View
         style={{
-          display: "flex",
           flexDirection: "row",
-          alignContent: "center",
+          alignItems: "center",
           justifyContent: "space-between",
         }}
       >
@@ -33,16 +84,24 @@ export default function mytrip() {
         >
           My Trips
         </Text>
+
         <Ionicons
           name="add-circle"
           size={35}
           color="black"
-          style={{
-            marginTop: 4,
-          }}
+          style={{ marginTop: 4 }}
         />
       </View>
-      {userTrips?.length == 0 ? <StartNewTripCard /> : null}
+
+      {loading && (
+        <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
+      )}
+
+      {userTrips?.length == 0 ? 
+        <StartNewTripCard />
+       : 
+        <UserTripList userTrips={userTrips} />
+      }
     </View>
   );
 }

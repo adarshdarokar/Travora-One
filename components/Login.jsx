@@ -4,6 +4,7 @@ import { View, Image, Text, StyleSheet,TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router'
 
 export default function Login() {
+  
   const router= useRouter();
   return (
     <View style={styles.screen}>
