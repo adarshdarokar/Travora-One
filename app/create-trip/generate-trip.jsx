@@ -1,68 +1,79 @@
 import { useRouter } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
+
 import { generateTripPlan } from "../../configs/AiModel";
-import { AI_PROMPT } from "../../constants/Options"; // AI prompt template
+import { auth, db } from "../../configs/Firebase";
+import { AI_PROMPT } from "../../constants/Options";
 import { Colors } from "../../constants/theme";
 import { CreateTripContext } from "../../context/CreateTripContext";
-import { auth, db } from "./../../configs/Firebase";
 
 export default function GenerateTrip() {
-  // Context se trip ka data le rahe hain
+
   const { tripData } = useContext(CreateTripContext);
-
-  // loading state UI ke liye
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
-  // navigation ke liye router
   const router = useRouter();
 
-  // firebase authenticated user
-  const user = auth.currentUser;
+  // ---------------- AUTH LISTENER ----------------
+  useEffect(() => {
 
-  // ---------------- AI TRIP GENERATION FUNCTION ----------------
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+
+      console.log("AUTH STATE:", u);
+
+      if (u) {
+        console.log("USER EMAIL:", u.email);
+        setUser(u);
+      } else {
+
+        console.log("User not logged in → redirect login");
+
+        router.replace("/auth/sign-in");
+
+      }
+
+    });
+
+    return unsubscribe;
+
+  }, []);
+
+  // ---------------- AI TRIP FUNCTION ----------------
   const GenerativeAiTrip = async () => {
-    // agar tripData nahi hai to function stop
-    if (!tripData) return;
+
+    if (!user || !tripData) return;
+
+    console.log("USER READY:", user.email);
+    console.log("TRIP DATA:", tripData);
 
     setLoading(true);
 
-    // ----------- AI PROMPT CREATE KAR RAHE HAIN -----------
-    // template prompt me values replace kar rahe hain
-    const FINAL_PROMPT = AI_PROMPT.replace(
-      "{location}",
-      tripData?.locationInfo?.name,
-    )
-      .replace("{totalDays}", tripData.totalNoOfDays)
-      .replace("{totalNight}", tripData.totalNoOfDays - 1)
-      .replace("{traveler}", tripData.traveler?.title)
-      .replace("{budget}", tripData.budget)
-      .replace("{totalDays}", tripData.totalNoOfDays)
-      .replace("{totalNight}", tripData.totalNoOfDays - 1);
+    const FINAL_PROMPT = AI_PROMPT
+      .replace("{location}", tripData?.locationInfo?.name)
+      .replace("{totalDays}", tripData?.totalNoOfDates)
+      .replace("{totalNight}", tripData?.totalNoOfDates - 1)
+      .replace("{traveler}", tripData?.traveler?.title)
+      .replace("{budget}", tripData?.budget);
 
-    // console me final prompt check karne ke liye
     console.log("FINAL PROMPT:", FINAL_PROMPT);
 
     try {
-      // debug ke liye trip data print
-      console.log("TRIP DATA:", tripData);
 
-      // ----------- AI MODEL CALL KAR RAHE HAIN -----------
-      const tripResp = await generateTripPlan(FINAL_PROMPT);
+      const tripResp = await generateTripPlan(tripData);
 
-      console.log("AI TRIP RESPONSE:", tripResp);
+      console.log("AI RESPONSE:", tripResp);
 
-      // agar AI response nahi aaya to error throw
       if (!tripResp) {
-        throw new Error("Trip generation failed");
+        console.log("AI response empty");
+        return;
       }
 
-      // firestore document id generate
       const docId = Date.now().toString();
 
-      // ----------- DATE SAFE FORMAT ME CONVERT KAR RAHE HAIN -----------
-      // firestore me moment object nahi chal sakta
       const safeTripData = {
         ...tripData,
         StartDate: tripData?.StartDate
@@ -73,30 +84,38 @@ export default function GenerateTrip() {
           : null,
       };
 
-      // ----------- FIRESTORE ME TRIP SAVE KAR RAHE HAIN -----------
       await setDoc(doc(db, "UserTrips", docId), {
-        userEmail: user?.email || "unknown",
+        userEmail: user.email,
         tripData: safeTripData,
         tripPlan: tripResp,
         docId: docId,
       });
 
-      console.log("TRIP SAVED");
+      console.log("TRIP SAVED WITH EMAIL:", user.email);
 
-      // trip save hone ke baad mytrip page pe redirect
       router.push("/(tabs)/mytrip");
+
     } catch (error) {
-      // agar AI ya firestore me error aaye
+
       console.log("AI ERROR:", error);
+
     }
 
     setLoading(false);
+
   };
 
-  // ----------- PAGE LOAD HOTE HI AI TRIP GENERATE -----------
+  // ---------------- RUN WHEN USER READY ----------------
   useEffect(() => {
-    GenerativeAiTrip();
-  }, []);
+
+    console.log("USER STATE:", user);
+    console.log("TRIPDATA STATE:", tripData);
+
+    if (user && tripData) {
+      GenerativeAiTrip();
+    }
+
+  }, [user, tripData]);
 
   // ---------------- UI ----------------
   return (
@@ -108,6 +127,7 @@ export default function GenerateTrip() {
         height: "100%",
       }}
     >
+
       <Text
         style={{
           fontFamily: "OutfitBold",
@@ -150,6 +170,7 @@ export default function GenerateTrip() {
       >
         [ Do not Go back ]
       </Text>
+
     </View>
   );
 }

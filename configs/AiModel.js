@@ -13,6 +13,7 @@ Return ONLY JSON in this structure:
 
 {
  "location":"",
+ "tripPlan":"",
  "duration":"",
  "traveler":"",
  "budget":"",

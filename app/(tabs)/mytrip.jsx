@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, View, ScrollView  } from "react-native";
 import StartNewTripCard from "../../components/MyTrips/StartNewTripCard";
 import UserTripList from "../../components/MyTrips/UserTripList";
 import { auth, db } from "./../../configs/Firebase";
@@ -29,11 +29,13 @@ export default function MyTrip() {
   try {
     setLoading(true);
 
-    console.log("USER EMAIL:", currentUser.email);
+    const userKey = currentUser.email ?? currentUser.uid;
+
+    console.log("USER KEY:", userKey);
 
     const q = query(
       collection(db, "UserTrips"),
-      where("userEmail", "==", currentUser.email)
+      where("userEmail", "==", userKey)
     );
 
     const querySnapshot = await getDocs(q);
@@ -61,7 +63,7 @@ export default function MyTrip() {
   }
 };
   return (
-    <View
+    <ScrollView
       style={{
         padding: 25,
         paddingTop: 55,
@@ -102,6 +104,6 @@ export default function MyTrip() {
        : 
         <UserTripList userTrips={userTrips} />
       }
-    </View>
+    </ScrollView>
   );
 }

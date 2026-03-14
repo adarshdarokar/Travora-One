@@ -27,22 +27,27 @@ export default function SignUp() {
       ToastAndroid.show('Please enter all details', ToastAndroid.SHORT)
       return;
     }
+ createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      const user = userCredential.user
+      console.log("ACCOUNT CREATED:", user.email)
 
-        const user = userCredential.user
-        console.log(user)
+      ToastAndroid.show("Account Created Successfully", ToastAndroid.SHORT)
 
-      })
-      .catch((error) => {
+      router.replace('/(tabs)/mytrip')
 
-        const errorCode = error.code
-        const errorMessage = error.message
-        console.log(errorMessage, errorCode)
+    })
+    .catch((error) => {
 
-      })
-  }
+      const errorCode = error.code
+      const errorMessage = error.message
+      console.log(errorMessage, errorCode)
+
+      ToastAndroid.show(errorMessage, ToastAndroid.LONG)
+
+    })
+}
 
   return (
     <View style={{
