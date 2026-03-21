@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, View, StatusBar } from "react-native";
 import FlightInfo from "../../components/TripDetails/FlightInfo";
 import { Colors } from "../../constants/theme";
 
@@ -31,7 +31,7 @@ export default function Tripdetails() {
     const fetchImage = async () => {
       try {
         const geoRes = await fetch(
-          `https://api.geoapify.com/v2/places?categories=tourism.sights&text=${encodeURIComponent(city)}&limit=5&apiKey=${GEO_API_KEY}`,
+          `https://api.geoapify.com/v2/places?categories=tourism.sights&text=${encodeURIComponent(city)}&limit=5&apiKey=${GEO_API_KEY}`
         );
 
         const geoData = await geoRes.json();
@@ -43,14 +43,16 @@ export default function Tripdetails() {
           city;
 
         const imgRes = await fetch(
-          `https://api.unsplash.com/photos/random?query=${encodeURIComponent(placeName + " " + city + " landmark tourism")}&orientation=landscape&client_id=${UNSPLASH_KEY}`,
+          `https://api.unsplash.com/photos/random?query=${encodeURIComponent(
+            placeName + " " + city + " tourism landmark"
+          )}&orientation=landscape&client_id=${UNSPLASH_KEY}`
         );
 
         const imgData = await imgRes.json();
 
         setImageUrl(
           imgData?.urls?.regular ||
-            `https://source.unsplash.com/1200x500/?${city}`,
+            `https://source.unsplash.com/1200x500/?${city}`
         );
       } catch (error) {
         console.log("Image error:", error);
@@ -63,8 +65,10 @@ export default function Tripdetails() {
 
   return (
     Tripdetails && (
-      <View>
-        {/* 🔥 TOP IMAGE */}
+      <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <StatusBar translucent backgroundColor="transparent" />
+
+        {/* 🔥 HERO IMAGE */}
         <Image
           source={{
             uri: imageUrl || `https://source.unsplash.com/1200x500/?travel`,
@@ -75,33 +79,33 @@ export default function Tripdetails() {
           }}
         />
 
-        {/* 🔥 CONTENT */}
+        {/* 🔥 OVERLAY CONTENT CARD */}
         <View
           style={{
-            padding: 15,
+            flex: 1,
             backgroundColor: Colors.WHITE,
-            height: "100%",
-            marginTop: -40,
+            marginTop: -50,
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
+            padding: 20,
           }}
         >
           {/* 📍 LOCATION */}
           <Text
             style={{
-              fontSize: 25,
+              fontSize: 26,
               fontFamily: "OutfitBold",
             }}
           >
             {Tripdetails?.tripPlan?.location}
           </Text>
 
-          {/* 📅 DATE RANGE */}
+          {/* 📅 DATE */}
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 14,
               color: Colors.GRAY,
-              marginTop: 5,
+              marginTop: 6,
               fontFamily: "OutfitMedium",
             }}
           >
@@ -112,19 +116,27 @@ export default function Tripdetails() {
           {/* 👤 TRAVELER */}
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 14,
               color: Colors.GRAY,
               fontFamily: "OutfitMedium",
-              marginTop: 3,
+              marginTop: 4,
             }}
           >
-            🚌  {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
+            🚌 {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
           </Text>
-          
-<FlightInfo flights={Tripdetails?.tripPlan?.flights} />   
-     </View>
 
+          {/* 🔥 DIVIDER */}
+          <View
+            style={{
+              height: 1,
+              backgroundColor: "#eee",
+              marginVertical: 15,
+            }}
+          />
 
+          {/* ✈️ FLIGHTS */}
+          <FlightInfo flights={Tripdetails?.tripPlan?.flights} />
+        </View>
       </View>
     )
   );
