@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Image, Text, View, StatusBar } from "react-native";
+import { Image, StatusBar, Text, View } from "react-native";
 import FlightInfo from "../../components/TripDetails/FlightInfo";
 import { Colors } from "../../constants/theme";
+import PlannnedTrip from "../../components/TripDetails/PlannnedTrip";
 
 export default function Tripdetails() {
   const { trip } = useLocalSearchParams();
@@ -14,7 +15,7 @@ export default function Tripdetails() {
 
   const GEO_API_KEY = "e88f2f7d70774c7da579a6b795af5d5c";
   const UNSPLASH_KEY = process.env.EXPO_PUBLIC_UNSPLASH_API_KEY;
-
+console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -22,8 +23,13 @@ export default function Tripdetails() {
       title: "",
     });
 
+    if (!trip) return;
+
     const parsedTrip = JSON.parse(trip);
     setTripdetails(parsedTrip);
+
+    console.log("FULL DATA:", parsedTrip);
+    console.log("HOTELS:", parsedTrip?.tripPlan?.hotels);
 
     const location = parsedTrip?.tripPlan?.location || "Tokyo";
     const city = location.split(",")[0];
@@ -63,81 +69,80 @@ export default function Tripdetails() {
     fetchImage();
   }, []);
 
-  return (
-    Tripdetails && (
-      <View style={{ flex: 1, backgroundColor: "#fff" }}>
-        <StatusBar translucent backgroundColor="transparent" />
+  if (!Tripdetails) return null;
 
-        {/* 🔥 HERO IMAGE */}
-        <Image
-          source={{
-            uri: imageUrl || `https://source.unsplash.com/1200x500/?travel`,
-          }}
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <StatusBar translucent backgroundColor="transparent" />
+
+      {/* 🔥 HERO IMAGE */}
+      <Image
+        source={{
+          uri: imageUrl || `https://source.unsplash.com/1200x500/?travel`,
+        }}
+        style={{
+          width: "100%",
+          height: 350,
+        }}
+      />
+
+      {/* 🔥 CONTENT */}
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: Colors.WHITE,
+          marginTop: -50,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          padding: 20,
+        }}
+      >
+        {/* 📍 LOCATION */}
+        <Text style={{ fontSize: 26, fontFamily: "OutfitBold" }}>
+          {Tripdetails?.tripPlan?.location || "Unknown"}
+        </Text>
+
+        {/* 📅 DATE */}
+        <Text
           style={{
-            width: "100%",
-            height: 350,
+            fontSize: 14,
+            color: Colors.GRAY,
+            marginTop: 6,
+            fontFamily: "OutfitMedium",
+          }}
+        >
+          {moment(Tripdetails?.tripData?.StartDate).format("DD MMM YYYY")} -{" "}
+          {moment(Tripdetails?.tripData?.EndDate).format("DD MMM YYYY")}
+        </Text>
+
+        {/* 👤 TRAVELER */}
+        <Text
+          style={{
+            fontSize: 14,
+            color: Colors.GRAY,
+            fontFamily: "OutfitMedium",
+            marginTop: 4,
+          }}
+        >
+          🚌 {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
+        </Text>
+
+        {/* 🔥 DIVIDER */}
+        <View
+          style={{
+            height: 1,
+            backgroundColor: "#eee",
+            marginVertical: 15,
           }}
         />
 
-        {/* 🔥 OVERLAY CONTENT CARD */}
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: Colors.WHITE,
-            marginTop: -50,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            padding: 20,
-          }}
-        >
-          {/* 📍 LOCATION */}
-          <Text
-            style={{
-              fontSize: 26,
-              fontFamily: "OutfitBold",
-            }}
-          >
-            {Tripdetails?.tripPlan?.location}
-          </Text>
-
-          {/* 📅 DATE */}
-          <Text
-            style={{
-              fontSize: 14,
-              color: Colors.GRAY,
-              marginTop: 6,
-              fontFamily: "OutfitMedium",
-            }}
-          >
-            {moment(Tripdetails?.tripData?.StartDate).format("DD MMM YYYY")} -{" "}
-            {moment(Tripdetails?.tripData?.EndDate).format("DD MMM YYYY")}
-          </Text>
-
-          {/* 👤 TRAVELER */}
-          <Text
-            style={{
-              fontSize: 14,
-              color: Colors.GRAY,
-              fontFamily: "OutfitMedium",
-              marginTop: 4,
-            }}
-          >
-            🚌 {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
-          </Text>
-
-          {/* 🔥 DIVIDER */}
-          <View
-            style={{
-              height: 1,
-              backgroundColor: "#eee",
-              marginVertical: 15,
-            }}
-          />
-
-          {/* ✈️ FLIGHTS */}
-          <FlightInfo flights={Tripdetails?.tripPlan?.flights} />
-        </View>
+        {/* 🔥 FLIGHTS + HOTELS (SAFE PASS) */}
+        <FlightInfo
+          flights={Tripdetails?.tripPlan?.flights || []}
+          hotels={Tripdetails?.tripPlan?.hotels || []}
+        />
+        <PlannnedTrip details={Tripdetails?.tripPlan?.itinerary}/>
       </View>
-    )
+    </View>
   );
 }
