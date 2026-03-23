@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Image, StatusBar, Text, View } from "react-native";
+import { Image, StatusBar, Text, View, ScrollView } from "react-native";
 import FlightInfo from "../../components/TripDetails/FlightInfo";
 import { Colors } from "../../constants/theme";
 import PlannnedTrip from "../../components/TripDetails/PlannnedTrip";
@@ -15,7 +15,7 @@ export default function Tripdetails() {
 
   const GEO_API_KEY = "e88f2f7d70774c7da579a6b795af5d5c";
   const UNSPLASH_KEY = process.env.EXPO_PUBLIC_UNSPLASH_API_KEY;
-console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -27,9 +27,6 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
 
     const parsedTrip = JSON.parse(trip);
     setTripdetails(parsedTrip);
-
-    console.log("FULL DATA:", parsedTrip);
-    console.log("HOTELS:", parsedTrip?.tripPlan?.hotels);
 
     const location = parsedTrip?.tripPlan?.location || "Tokyo";
     const city = location.split(",")[0];
@@ -61,7 +58,6 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
             `https://source.unsplash.com/1200x500/?${city}`
         );
       } catch (error) {
-        console.log("Image error:", error);
         setImageUrl(`https://source.unsplash.com/1200x500/?${city}`);
       }
     };
@@ -72,7 +68,7 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
   if (!Tripdetails) return null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }} showsVerticalScrollIndicator={false}>
       <StatusBar translucent backgroundColor="transparent" />
 
       {/* 🔥 HERO IMAGE */}
@@ -82,7 +78,7 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
         }}
         style={{
           width: "100%",
-          height: 350,
+          height: 300,
         }}
       />
 
@@ -91,23 +87,22 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
         style={{
           flex: 1,
           backgroundColor: Colors.WHITE,
-          marginTop: -50,
+          marginTop: -45,
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
-          padding: 20,
+          paddingHorizontal: 18,
+          paddingTop: 18,
         }}
       >
-        {/* 📍 LOCATION */}
-        <Text style={{ fontSize: 26, fontFamily: "OutfitBold" }}>
+        <Text style={{ fontSize: 22, fontFamily: "OutfitBold" }}>
           {Tripdetails?.tripPlan?.location || "Unknown"}
         </Text>
 
-        {/* 📅 DATE */}
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 13,
             color: Colors.GRAY,
-            marginTop: 6,
+            marginTop: 4,
             fontFamily: "OutfitMedium",
           }}
         >
@@ -115,34 +110,32 @@ console.log("HOTELS FINAL:", Tripdetails?.tripPlan?.hotels);
           {moment(Tripdetails?.tripData?.EndDate).format("DD MMM YYYY")}
         </Text>
 
-        {/* 👤 TRAVELER */}
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 13,
             color: Colors.GRAY,
             fontFamily: "OutfitMedium",
-            marginTop: 4,
+            marginTop: 2,
           }}
         >
           🚌 {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
         </Text>
 
-        {/* 🔥 DIVIDER */}
         <View
           style={{
             height: 1,
             backgroundColor: "#eee",
-            marginVertical: 15,
+            marginVertical: 12,
           }}
         />
 
-        {/* 🔥 FLIGHTS + HOTELS (SAFE PASS) */}
         <FlightInfo
           flights={Tripdetails?.tripPlan?.flights || []}
           hotels={Tripdetails?.tripPlan?.hotels || []}
         />
-        <PlannnedTrip details={Tripdetails?.tripPlan?.itinerary}/>
+
+        <PlannnedTrip details={Tripdetails?.tripPlan?.itinerary} />
       </View>
-    </View>
+    </ScrollView>
   );
 }

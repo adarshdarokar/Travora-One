@@ -3,20 +3,17 @@ import React from "react";
 
 export default function HotelList({ hotelList }) {
 
-  // 🔥 DATA ENRICHMENT (AUTO ADD PRICE + RATING)
-  const enrichedHotels = hotelList?.map((hotel, index) => ({
+  const enrichedHotels = (hotelList || []).map((hotel) => ({
     ...hotel,
-
-    // ⭐ Rating (3.5 - 5)
     rating: hotel.rating ?? (Math.random() * 1.5 + 3.5).toFixed(1),
-
-    // 💲 Price ($50 - $150)
     price: hotel.price ?? Math.floor(Math.random() * 100 + 50)
   }));
 
   return (
-    <View style={{ marginTop: 20 }}>
-      
+    <View style={{ marginTop: 5 }}>
+
+      {/* 🔥 yahi main shift */}
+
       <Text
         style={{
           fontFamily: "OutfitBold",
@@ -29,7 +26,7 @@ export default function HotelList({ hotelList }) {
       <FlatList
         data={enrichedHotels}
         style={{ marginTop: 10 }}
-        horizontal={true}
+        horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
@@ -40,7 +37,6 @@ export default function HotelList({ hotelList }) {
               width: 150,
             }}
           >
-            {/* 🖼️ Image */}
             <Image
               source={require("./../../assets/images/adventure.png")}
               style={{
@@ -50,33 +46,32 @@ export default function HotelList({ hotelList }) {
               }}
             />
 
-            {/* 🏨 Hotel Name */}
             <Text
               style={{
                 fontFamily: "OutfitMedium",
                 fontSize: 16,
                 marginTop: 5,
               }}
+              numberOfLines={2}
             >
-              {item.name || "Hotel Name"}
+              {item?.name || "Hotel Name"}
             </Text>
 
-            {/* ⭐ Rating + 💲 Price */}
-        <View style={{ 
-  flexDirection:'row',
-  alignItems:'center', // 🔥 vertical align
-  gap: 40// 🔥 thoda sa gap (React Native >= 0.71)
-}}>
-  
-  <Text>
-    ⭐ {item.rating || "4.2"}
-  </Text>
+            <View style={{ 
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: "space-between",
+              marginTop: 4
+            }}>
+              <Text>
+                {`⭐ ${item?.rating || "4.2"}`}
+              </Text>
 
-  <Text>
-    💵 ${item.price || "80"}
-  </Text>
+              <Text>
+                {`💵 $${item?.price || "80"}`}
+              </Text>
+            </View>
 
-</View>
           </View>
         )}
       />
