@@ -24,15 +24,33 @@ export default function PlannnedTrip({ details }) {
   };
 
   return (
-    <View style={{ marginTop: 20 }}>
+    <View style={{ 
+      marginTop: 10,
+      backgroundColor: "#f8f9fb",
+      padding: 10,
+      borderRadius: 15
+    }}>
 
-      <Text style={{
-        fontSize: 18,
-        fontFamily: 'OutfitBold',
+      {/* 🔥 HEADING */}
+      <View style={{
+        flexDirection: "row",
+        alignItems: "center",
         marginBottom: 10
       }}>
-        ⛱️ Plan Details
-      </Text>
+        <Text style={{
+          fontSize: 20,
+          fontFamily: 'OutfitBold',
+          marginRight: 8
+        }}>
+          ⛱️ Plan Details
+        </Text>
+
+        <View style={{
+          flex: 1,
+          height: 1,
+          backgroundColor: "#ddd"
+        }} />
+      </View>
 
       {details?.slice(0, 2).map((dayItem, index) => {
 
@@ -43,25 +61,40 @@ export default function PlannnedTrip({ details }) {
         return (
           <View key={index}>
 
-            <Text style={{
-              fontFamily:'OutfitMedium',
-              fontSize:20,
-              marginTop:15,
-              marginBottom:5
+            {/* 🔥 DAY HEADING WITH LINE */}
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 10,
+              marginBottom: 6
             }}>
-              Day {index + 1}
-            </Text>
+              <Text style={{
+                fontFamily: 'OutfitBold',
+                fontSize: 18,
+                marginRight: 8
+              }}>
+                Day {index + 1}
+              </Text>
 
-            {/* CARD */}
+              <View style={{
+                flex: 1,
+                height: 1,
+                backgroundColor: "#ddd"
+              }} />
+            </View>
+
+            {/* 🔥 CARD */}
             <View style={{
               backgroundColor: '#fff',
               borderRadius: 18,
               padding: 14,
-              marginTop: 6,
+              marginBottom: 10,
+              borderWidth: 1,
+              borderColor: "#eee",
               shadowColor: '#000',
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              elevation: 5
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              elevation: 3
             }}>
 
               <Image
@@ -80,7 +113,7 @@ export default function PlannnedTrip({ details }) {
                 fontFamily: 'OutfitMedium',
                 color: '#555',
                 marginBottom: 8,
-                lineHeight: 18   // 🔥 readability fix
+                lineHeight: 18
               }}>
                 {getRandomDesc()}
               </Text>

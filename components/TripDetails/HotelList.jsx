@@ -1,7 +1,18 @@
 import { View, Text, FlatList, Image } from "react-native";
-import React from "react";
-
+import React, { useEffect } from "react";
+import { GetPhotoRef } from "../../app/services/GooglePlace";
 export default function HotelList({ hotelList }) {
+
+  // 🔥 API CALL FUNCTION
+  const GetGooglePhotoRef = async () => {
+    const result = await GetPhotoRef("Las Vegas"); // ✅ fixed
+    console.log("API DATA:", result);
+  };
+
+  // 🔥 CALL ON LOAD
+  useEffect(() => {
+    GetGooglePhotoRef();
+  }, []);
 
   const enrichedHotels = (hotelList || []).map((hotel) => ({
     ...hotel,
@@ -10,65 +21,80 @@ export default function HotelList({ hotelList }) {
   }));
 
   return (
-    <View style={{ marginTop: 5 }}>
+    <View style={{ 
+      marginTop: 10,
+      backgroundColor: "#f8f9fb",
+      padding: 10,
+      borderRadius: 15
+    }}>
 
-      {/* 🔥 yahi main shift */}
-
-      <Text
-        style={{
+      {/* 🔥 HEADER */}
+      <View style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10
+      }}>
+        <Text style={{
           fontFamily: "OutfitBold",
           fontSize: 20,
-        }}
-      >
-        🏨 Hotel Recommendation
-      </Text>
+          marginRight: 8
+        }}>
+          🏨 Hotel Recommendation
+        </Text>
 
+        <View style={{
+          flex: 1,
+          height: 1,
+          backgroundColor: "#ddd"
+        }} />
+      </View>
+
+      {/* 🔥 LIST */}
       <FlatList
         data={enrichedHotels}
-        style={{ marginTop: 10 }}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-
-          <View
-            style={{
-              marginRight: 21,
-              width: 150,
-            }}
-          >
+          <View style={{
+            marginRight: 16,
+            width: 150,
+            backgroundColor: "#fff",
+            borderRadius: 18,
+            padding: 8,
+            borderWidth: 1,
+            borderColor: "#eee",
+            elevation: 3
+          }}>
+            
             <Image
               source={require("./../../assets/images/adventure.png")}
               style={{
-                width: 150,
+                width: "100%",
                 height: 110,
-                borderRadius: 15,
+                borderRadius: 12,
               }}
             />
 
-            <Text
-              style={{
-                fontFamily: "OutfitMedium",
-                fontSize: 16,
-                marginTop: 5,
-              }}
-              numberOfLines={2}
-            >
+            <Text style={{
+              fontFamily: "OutfitMedium",
+              fontSize: 15,
+              marginTop: 6,
+            }} numberOfLines={2}>
               {item?.name || "Hotel Name"}
             </Text>
 
-            <View style={{ 
+            <View style={{
               flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: "space-between",
-              marginTop: 4
+              marginTop: 6
             }}>
-              <Text>
-                {`⭐ ${item?.rating || "4.2"}`}
+              <Text style={{ fontSize: 13 }}>
+                ⭐ {item?.rating || "4.2"}
               </Text>
 
-              <Text>
-                {`💵 $${item?.price || "80"}`}
+              <Text style={{ fontSize: 13 }}>
+                💵 ${item?.price || "80"}
               </Text>
             </View>
 

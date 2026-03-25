@@ -68,7 +68,10 @@ export default function Tripdetails() {
   if (!Tripdetails) return null;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#f8f9fb" }} // 🔥 subtle bg
+      showsVerticalScrollIndicator={false}
+    >
       <StatusBar translucent backgroundColor="transparent" />
 
       {/* 🔥 HERO IMAGE */}
@@ -78,26 +81,29 @@ export default function Tripdetails() {
         }}
         style={{
           width: "100%",
-          height: 300,
+          height: 280,
         }}
       />
 
-      {/* 🔥 CONTENT */}
+      {/* 🔥 CONTENT CARD */}
       <View
         style={{
           flex: 1,
           backgroundColor: Colors.WHITE,
-          marginTop: -45,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
+          marginTop: -40,
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
           paddingHorizontal: 18,
           paddingTop: 18,
+          paddingBottom: 25
         }}
       >
+        {/* 🔥 LOCATION */}
         <Text style={{ fontSize: 22, fontFamily: "OutfitBold" }}>
           {Tripdetails?.tripPlan?.location || "Unknown"}
         </Text>
 
+        {/* 🔥 DATE */}
         <Text
           style={{
             fontSize: 13,
@@ -110,6 +116,7 @@ export default function Tripdetails() {
           {moment(Tripdetails?.tripData?.EndDate).format("DD MMM YYYY")}
         </Text>
 
+        {/* 🔥 TRAVELER */}
         <Text
           style={{
             fontSize: 13,
@@ -121,14 +128,16 @@ export default function Tripdetails() {
           🚌 {Tripdetails?.tripPlan?.traveler?.title || "Just Me"}
         </Text>
 
+        {/* 🔥 DIVIDER */}
         <View
           style={{
             height: 1,
             backgroundColor: "#eee",
-            marginVertical: 12,
+            marginVertical: 14,
           }}
         />
 
+        {/* 🔥 SECTIONS */}
         <FlightInfo
           flights={Tripdetails?.tripPlan?.flights || []}
           hotels={Tripdetails?.tripPlan?.hotels || []}

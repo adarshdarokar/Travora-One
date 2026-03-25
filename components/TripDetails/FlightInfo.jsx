@@ -15,73 +15,47 @@ export default function FlightInfo({ flights, hotels }) {
 
   const price = flight?.price || "$100-$200 (approx.)";
 
-  return (
-    <View style={{ marginTop: -10 }}> {/* 🔥 thoda upar shift */}
+ return (
+  <View style={{ marginTop: -10 }}>
+
+    <View style={{
+      backgroundColor: "#f8f9fb",
+      borderRadius: 16,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: "#eee",
+      marginBottom: 10
+    }}>
+
+      <Text style={{
+        fontFamily: 'OutfitBold',
+        fontSize: 17,
+        marginBottom: 4 
+      }}>
+        ✈️ Flights
+      </Text>
 
       <View style={{
-        backgroundColor: "#f8f9fb",
-        borderRadius: 16,
-        padding: 12, // 🔥 padding kam kiya
-        borderWidth: 1,
-        borderColor: "#eee",
-        marginBottom: 10 // 🔥 hotels ke liye space
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
       }}>
 
-        <Text style={{
-          fontFamily: 'OutfitBold',
-          fontSize: 17, // 🔥 thoda chota
-          marginBottom: 4 
-        }}>
-          ✈️ Flights
-        </Text>
-
-        <View style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
-
-          <View>
-            <Text style={{
-              fontFamily: 'OutfitBold',
-              fontSize: 14
-            }}>
-              {airline}
-            </Text>
-
-            <Text style={{
-              fontFamily: 'Outfit',
-              fontSize: 12,
-              color: Colors.GRAY,
-              marginTop: 1
-            }}>
-              {price}
-            </Text>
-          </View>
-
-          <TouchableOpacity style={{
-            backgroundColor: Colors.PRIMARY,
-            paddingVertical: 5, // 🔥 chota button
-            paddingHorizontal: 12,
-            borderRadius: 8
-          }}>
-            <Text style={{
-              color: "#fff",
-              fontFamily: 'Outfit',
-              fontSize: 11
-            }}>
-              Book
-            </Text>
-          </TouchableOpacity>
-
+        <View>
+          <Text>{airline}</Text>
+          <Text>{price}</Text>
         </View>
+
+        <TouchableOpacity>
+          <Text>Book</Text>
+        </TouchableOpacity>
 
       </View>
 
-      {/* 🏨 Hotels */}
-      
-      <HotelList hotelList={hotels} />
-
     </View>
-  )
+
+    <HotelList hotelList={hotels} />
+
+  </View>
+);
 }
