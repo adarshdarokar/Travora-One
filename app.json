@@ -7,6 +7,11 @@
     "scheme": "travoraone",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+
+    "extra": {
+      "GEO_API_KEY": "e88f2f7d70774c7da579a6b795af5d5c"
+    },
+
     "ios": {
       "supportsTablet": true
     },
@@ -20,9 +25,7 @@
     "web": {
       "output": "static"
     },
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
