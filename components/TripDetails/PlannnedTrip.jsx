@@ -1,27 +1,7 @@
-import { Text, View, Image } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Text, View } from 'react-native';
+import PlaceCard from './PlaceCard';
 
 export default function PlannnedTrip({ details }) {
-
-  const descriptions = [
-    "Explore the vibrant streets and enjoy the local vibes.",
-    "Discover amazing places and create unforgettable memories.",
-    "Experience the culture, food, and beautiful views.",
-    "Walk around and enjoy the peaceful environment.",
-    "Enjoy sightseeing and capture stunning moments."
-  ];
-
-  const getRandomDesc = () => {
-    return descriptions[Math.floor(Math.random() * descriptions.length)];
-  };
-
-  const getRandomPrice = () => {
-    return Math.random() > 0.5 ? 'Free' : `$${Math.floor(Math.random() * 50) + 10}`;
-  };
-
-  const getRandomTime = () => {
-    return `${Math.floor(Math.random() * 3) + 1} hour`;
-  };
 
   return (
     <View style={{ 
@@ -31,7 +11,6 @@ export default function PlannnedTrip({ details }) {
       borderRadius: 15
     }}>
 
-      {/* 🔥 HEADING */}
       <View style={{
         flexDirection: "row",
         alignItems: "center",
@@ -52,122 +31,10 @@ export default function PlannnedTrip({ details }) {
         }} />
       </View>
 
-      {details?.slice(0, 2).map((dayItem, index) => {
-
-        const activities = Array.isArray(dayItem.activities)
-          ? dayItem.activities.join(', ')
-          : '';
-
-        return (
-          <View key={index}>
-
-            {/* 🔥 DAY HEADING WITH LINE */}
-            <View style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 10,
-              marginBottom: 6
-            }}>
-              <Text style={{
-                fontFamily: 'OutfitBold',
-                fontSize: 18,
-                marginRight: 8
-              }}>
-                Day {index + 1}
-              </Text>
-
-              <View style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: "#ddd"
-              }} />
-            </View>
-
-            {/* 🔥 CARD */}
-            <View style={{
-              backgroundColor: '#fff',
-              borderRadius: 18,
-              padding: 14,
-              marginBottom: 10,
-              borderWidth: 1,
-              borderColor: "#eee",
-              shadowColor: '#000',
-              shadowOpacity: 0.06,
-              shadowRadius: 6,
-              elevation: 3
-            }}>
-
-              <Image
-                source={require('../../assets/images/adventure.png')}
-                style={{
-                  width: '100%',
-                  height: 130,
-                  borderRadius: 14,
-                  marginBottom: 10
-                }}
-                resizeMode="cover"
-              />
-
-              {/* DESCRIPTION */}
-              <Text style={{
-                fontFamily: 'OutfitMedium',
-                color: '#555',
-                marginBottom: 8,
-                lineHeight: 18
-              }}>
-                {getRandomDesc()}
-              </Text>
-
-              {/* DATE */}
-              <Text style={{ marginBottom: 6 }}>
-                <Text style={{ fontFamily: 'OutfitBold' }}>Date: </Text>
-                <Text style={{ fontFamily: 'OutfitMedium' }}>
-                  {dayItem.date}
-                </Text>
-              </Text>
-
-              {/* ACTIVITIES */}
-              <Text style={{ marginBottom: 10, lineHeight: 18 }}>
-                <Text style={{ fontFamily: 'OutfitBold' }}>Activities: </Text>
-                <Text style={{ fontFamily: 'OutfitMedium' }}>
-                  {activities}
-                </Text>
-              </Text>
-
-              {/* BOTTOM */}
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingTop: 8,
-                borderTopWidth: 0.5,
-                borderColor: '#ddd'
-              }}>
-
-                <View>
-                  <Text style={{ fontFamily: 'OutfitMedium', marginBottom: 3 }}>
-                    🎟️ Ticket Price: <Text style={{ fontFamily: 'OutfitBold' }}>
-                      {getRandomPrice()}
-                    </Text>
-                  </Text>
-
-                  <Text style={{ fontFamily: 'OutfitMedium' }}>
-                    🕒 Time to Travel: <Text style={{ fontFamily: 'OutfitBold' }}>
-                      {getRandomTime()}
-                    </Text>
-                  </Text>
-                </View>
-
-                <Ionicons name="navigate-circle" size={34} color="black" />
-
-              </View>
-
-            </View>
-
-          </View>
-        );
-      })}
+      {details?.slice(0, 2).map((dayItem, index) => (
+        <PlaceCard key={index} dayItem={dayItem} index={index} />
+      ))}
 
     </View>
-  )
+  );
 }

@@ -1,15 +1,15 @@
-import { View, Text, FlatList, Image } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import React, { useEffect } from "react";
 import { GetPhotoRef } from "../../app/services/GooglePlace";
+import HotelCard from "../../components/TripDetails/HotelCard";
+
 export default function HotelList({ hotelList }) {
 
-  // 🔥 API CALL FUNCTION
   const GetGooglePhotoRef = async () => {
-    const result = await GetPhotoRef("Las Vegas"); // ✅ fixed
+    const result = await GetPhotoRef("Las Vegas");
     console.log("API DATA:", result);
   };
 
-  // 🔥 CALL ON LOAD
   useEffect(() => {
     GetGooglePhotoRef();
   }, []);
@@ -28,7 +28,6 @@ export default function HotelList({ hotelList }) {
       borderRadius: 15
     }}>
 
-      {/* 🔥 HEADER */}
       <View style={{
         flexDirection: "row",
         alignItems: "center",
@@ -49,58 +48,16 @@ export default function HotelList({ hotelList }) {
         }} />
       </View>
 
-      {/* 🔥 LIST */}
       <FlatList
         data={enrichedHotels}
-        horizontal
+        horizontal={true}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={{
-            marginRight: 16,
-            width: 150,
-            backgroundColor: "#fff",
-            borderRadius: 18,
-            padding: 8,
-            borderWidth: 1,
-            borderColor: "#eee",
-            elevation: 3
-          }}>
-            
-            <Image
-              source={require("./../../assets/images/adventure.png")}
-              style={{
-                width: "100%",
-                height: 110,
-                borderRadius: 12,
-              }}
-            />
-
-            <Text style={{
-              fontFamily: "OutfitMedium",
-              fontSize: 15,
-              marginTop: 6,
-            }} numberOfLines={2}>
-              {item?.name || "Hotel Name"}
-            </Text>
-
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: "space-between",
-              marginTop: 6
-            }}>
-              <Text style={{ fontSize: 13 }}>
-                ⭐ {item?.rating || "4.2"}
-              </Text>
-
-              <Text style={{ fontSize: 13 }}>
-                💵 ${item?.price || "80"}
-              </Text>
-            </View>
-
-          </View>
+        renderItem={({ item, index }) => (
+          <HotelCard item={item} />
         )}
       />
+
     </View>
   );
 }
