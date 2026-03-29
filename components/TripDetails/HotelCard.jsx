@@ -15,7 +15,9 @@ export default function HotelCard({ item }) {
 
   const GetGooglePhotoRef = async () => {
     try {
-      const query = `${item.name} luxury hotel`;
+      // 🔥 ADD LOCATION FOR BETTER ACCURACY
+      const place = item?.address || "Tokyo";
+      const query = `${item.name} ${place} luxury hotel exterior`;
 
       const res = await fetch(
         `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=landscape&client_id=${UNSPLASH_KEY}`
@@ -25,12 +27,12 @@ export default function HotelCard({ item }) {
 
       setImageUrl(
         data?.urls?.regular ||
-        `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(item.name)}`
+        `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(item.name + " " + place)}`
       );
 
     } catch (error) {
       setImageUrl(
-        `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(item.name)}`
+        `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(item.name + " " + (item?.address || "Tokyo"))}`
       );
     }
   };
@@ -66,7 +68,7 @@ export default function HotelCard({ item }) {
         source={{
           uri:
             imageUrl ||
-            `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(item?.name || "hotel")}`
+            `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent((item?.name || "hotel") + " " + (item?.address || "Tokyo"))}`
         }}
         style={{
           width: "100%",
