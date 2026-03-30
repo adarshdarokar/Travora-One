@@ -21,7 +21,9 @@ export default function PlaceCard({ dayItem }) {
   };
 
   const getRandomPrice = () => {
-    return Math.random() > 0.5 ? 'Free' : `$${Math.floor(Math.random() * 50) + 10}`;
+    return Math.random() > 0.5
+      ? 'Free'
+      : `$${Math.floor(Math.random() * 50) + 10}`;
   };
 
   const getRandomTime = () => {
@@ -59,15 +61,17 @@ export default function PlaceCard({ dayItem }) {
   };
 
   return (
-    <View style={{
-      backgroundColor: '#fff',
-      borderRadius: 18,
-      padding: 14,
-      marginBottom: 10,
-      borderWidth: 1,
-      borderColor: "#eee",
-      elevation: 3
-    }}>
+    <View
+      style={{
+        backgroundColor: '#fff',
+        borderRadius: 18,
+        padding: 14,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#eee',
+        elevation: 3
+      }}
+    >
 
       <Image
         source={{
@@ -83,11 +87,13 @@ export default function PlaceCard({ dayItem }) {
         }}
       />
 
-      <Text style={{
-        fontFamily: 'OutfitMedium',
-        color: '#555',
-        marginBottom: 8
-      }}>
+      <Text
+        style={{
+          fontFamily: 'OutfitMedium',
+          color: '#555',
+          marginBottom: 8
+        }}
+      >
         {getRandomDesc()}
       </Text>
 
@@ -105,14 +111,16 @@ export default function PlaceCard({ dayItem }) {
         </Text>
       </Text>
 
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 8,
-        borderTopWidth: 0.5,
-        borderColor: '#ddd'
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingTop: 8,
+          borderTopWidth: 0.5,
+          borderColor: '#ddd'
+        }}
+      >
 
         <View>
           <Text style={{ fontFamily: 'OutfitMedium' }}>
@@ -124,7 +132,11 @@ export default function PlaceCard({ dayItem }) {
           </Text>
         </View>
 
-        <Ionicons name="navigate-circle" size={34} color="black" />
+        <Ionicons
+          name="navigate-circle"
+          size={34}
+          color="black"
+        />
 
       </View>
 
